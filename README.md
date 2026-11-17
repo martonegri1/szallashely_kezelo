@@ -1,0 +1,2 @@
+# szallashely_kezelo
+
