@@ -53,6 +53,10 @@ class Epitett_szallashely(Szallashely):
             raise ValueError("Az ár csak poziív szám lehet!")
         return ar
 
+    def ar_szamitasa(self):
+        vegso_ar = self.ar + (self.ar//10 * self.ertekeles)
+        return vegso_ar
+
 
 class Szalloda(Epitett_szallashely):
     def __init__(self, azonosito, fajta, cim, ar, ertekeles, wellness):
@@ -83,6 +87,13 @@ class Camping(Szallashely):
         if not isinstance(vizpart, bool):
             raise ValueError("Csak igen vagy nem lehet!")
         return vizpart
+
+    def ar_szamitasa(self):
+        if self.vizpart:
+            ar = 5000
+        else:
+            ar = 3500
+        return ar
 
 class Cim():
     def __init__(self, iranyitoszam, telepules, kozterulet_neve, hazszam):
@@ -126,8 +137,8 @@ class Cim():
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
 cim2 = Cim(1221, "Budapest", "Kocsis utca", "32/A")
 cim3 = Cim(2324, "Fonyód", "Kossuth utca", "21-22")
-szalloda1 = Szalloda("sz000001", "üzleti", cim1, 18000, 5, True)
-panzio1 = Panzio("p0000001", "sport", cim2, 20000, 4, True )
-camping1 = Camping("c0000001", "egyéb", cim3, True)
+szalloda1 = Szalloda("SZAL0001", "üzleti", cim1, 20000, 5, True)
+panzio1 = Panzio("PANZ0001", "sport", cim2, 18000, 4, True )
+camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 
-print(cim1.hazszam_beallitasa(1))
+print(camping1.ar_szamitasa())
