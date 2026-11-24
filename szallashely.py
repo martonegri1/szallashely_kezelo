@@ -252,6 +252,123 @@ class Szallashelyek(list):
             print("Azonosító nem található.")
         return
 
+    def szallashely_modositasa(self):
+        azonosito = input("Azonosító: ")
+        for szallashely in self:
+            if azonosito == szallashely.azonosito:
+                print("1 - Azonosító")
+                print("2 - Fajta")
+                print("3 - Cím")
+                if isinstance(szallashely, Szalloda):
+                    print("4 - Ár")
+                    print("5 - Értékelés")
+                    print("6 - Wellness")
+                elif isinstance(szallashely, Panzio):
+                    print("4 - Ár")
+                    print("5 - Értékelés")
+                    print("6 - Reggeli")
+                elif isinstance(szallashely, Camping):
+                    print("4 - Vízpart")
+
+                modositas = input("Mit szeretnél módosítani?")
+
+                if modositas == "1":
+                    uj_azonosito = input("Új azonosító: ")
+                    for elem in self:
+                        if elem is not szallashely and uj_azonosito == elem.azonosito:
+                            print("Az azonosító már használatban van!")
+                            return
+                    szallashely.azonosito = szallashely.azonosito_beallitasa(uj_azonosito)
+                    return
+
+                elif modositas == "2":
+                    uj_fajta = input("Új fajta: ")
+                    if uj_fajta != szallashely.fajta:
+                        szallashely.fajta = szallashely.fajta_beallitasa(uj_fajta)
+                        return
+                    else:
+                        print("Ugyanaz a fajta nem adható meg!")
+                        return
+
+                elif modositas == "3":
+                    uj_cim = input("Új cim: ")
+                    if uj_cim != szallashely.cim:
+                        szallashely.cim = uj_cim
+                        return
+                    else:
+                        print("Ugyanaz a cím nem adható meg!")
+                        return
+
+                elif modositas == "4":
+                    if isinstance(szallashely, Szalloda) or isinstance(szallashely, Panzio):
+                        uj_ar = int(input("Új ár: "))
+                        if uj_ar != szallashely.ar:
+                            szallashely.ar = szallashely.ar_beallitasa(uj_ar)
+                            return
+                        else:
+                            print("Ugyanaz az ár nem adható meg!")
+                            return
+
+                    elif isinstance(szallashely, Camping):
+                        uj_vizpart = input("Vízpart: ")
+                        if uj_vizpart != szallashely.vizpart:
+                            if uj_vizpart == "van":
+                                uj_vizpart = True
+                            elif uj_vizpart == "nincs":
+                                uj_vizpart = False
+                            else:
+                                print("Hibás választás!")
+                                return
+                            szallashely.vizpart = szallashely.vizpart_beallitasa(uj_vizpart)
+                            return
+                        else:
+                            print("Ugyanaz nem adható meg!")
+                            return
+
+                elif modositas == "5":
+                    if isinstance(szallashely, Szalloda) or isinstance(szallashely, Panzio):
+                        uj_ertekeles = int(input("Új értekeles: "))
+                        if uj_ertekeles != szallashely.ertekeles:
+                            szallashely.ertekeles = szallashely.ertekeles_beallitasa(uj_ertekeles)
+                            return
+                        else:
+                            print("Ugyanaz az értékelés nem adható meg!")
+                            return
+
+                elif modositas == "6":
+                    if isinstance(szallashely, Szalloda):
+                        uj_wellness = input("Wellness: ")
+                        if uj_wellness != szallashely.wellness:
+                            if uj_wellness == "van":
+                                uj_wellness = True
+                            elif uj_wellness == "nincs":
+                                uj_wellness = False
+                            else:
+                                print("Hibás választás!")
+                                return
+                            szallashely.wellness = szallashely.wellness_beallitasa(uj_wellness)
+                            return
+                        else:
+                            print("Ugyanaz nem adható meg!")
+                            return
+                    elif isinstance(szallashely, Panzio):
+                        uj_reggeli = input("Reggeli: ")
+                        if uj_reggeli != szallashely.reggeli:
+                            if uj_reggeli == "van":
+                                uj_reggeli = True
+                            elif uj_reggeli == "nincs":
+                                uj_reggeli = False
+                            else:
+                                print("Hibás választás!")
+                                return
+                            szallashely.reggeli = szallashely.reggeli_beallitasa(uj_reggeli)
+                            return
+                        else:
+                            print("Ugyanaz nem adható meg!")
+                            return
+        else:
+            print("Azonosító nem található.")
+
 
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
 cim2 = Cim(1221, "Budapest", "Kocsis utca", "32/A")
@@ -263,5 +380,6 @@ camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 szallashelyek = Szallashelyek()
 
 szallashelyek.szallashely_hozzaadasa()
-szallashelyek.szallashely_listazasa()
+#szallashelyek.szallashely_listazasa()
 #szallashelyek.szallashely_torlese()
+szallashelyek.szallashely_modositasa()
