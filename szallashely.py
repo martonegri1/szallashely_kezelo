@@ -133,6 +133,70 @@ class Cim():
             raise ValueError("A házszám megadása kötelező!")
         return helyes_hazszam
 
+class Szallashelyek(list):
+    def __init__(self):
+        super().__init__()
+
+    def szallashely_hozzaadasa(self):
+        azonosito = input("Azonosító: ")
+        for szallashely in self:
+            if azonosito == szallashely.azonosito:
+                print("A szálláshely már létezik.")
+                return
+        fajta = input("Fajta: ")
+        cim = input("Cim: ")
+
+        print("1 - Szálloda")
+        print("2 - Panzió")
+        print("3 - Camping")
+        tipus = input("Válaszd ki a szálláshely típusát: ")
+
+        if tipus == "1":
+            ar = int(input("Ár: "))
+            ertekeles = int(input("Értékelés: "))
+            wellness = input("Wellness: ")
+            if wellness == "van":
+                wellness = True
+            elif wellness == "nincs":
+                wellness = False
+            else:
+                print("Hibás válasz!")
+                return
+            uj_szallashely = Szalloda(azonosito, fajta, cim, ar, ertekeles, wellness)
+            self.append(uj_szallashely)
+        elif tipus == "2":
+            ar = int(input("Ár: "))
+            ertekeles = int(input("értékelés: "))
+            reggeli = input("Reggeli: ")
+            if reggeli == "van":
+                reggeli = True
+            elif reggeli == "nincs":
+                reggeli = False
+            else:
+                print("Hibás válasz!")
+                return
+            uj_szallashely = Panzio(azonosito, fajta, cim, ar, ertekeles, reggeli)
+            self.append(uj_szallashely)
+        elif tipus == "3":
+            vizpart = input("Vízpart: ")
+            if vizpart == "van":
+                vizpart = True
+            elif vizpart == "nincs":
+                vizpart = False
+            else:
+                print("Hibás választás!")
+                return
+            uj_szallashely = Camping(azonosito, fajta, cim, vizpart)
+            self.append(uj_szallashely)
+        else:
+            print("Hibás választás!")
+            return
+
+    def append(self, szallashely):
+        if isinstance(szallashely, (Szalloda, Panzio, Camping)):
+            super().append(szallashely)
+        else:
+            raise TypeError("Hiba")
 
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
 cim2 = Cim(1221, "Budapest", "Kocsis utca", "32/A")
@@ -141,4 +205,6 @@ szalloda1 = Szalloda("SZAL0001", "üzleti", cim1, 20000, 5, True)
 panzio1 = Panzio("PANZ0001", "sport", cim2, 18000, 4, True )
 camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 
-print(camping1.ar_szamitasa())
+szallashelyek = Szallashelyek()
+
+szallashelyek.szallashely_hozzaadasa()
