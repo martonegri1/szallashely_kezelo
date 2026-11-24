@@ -208,22 +208,49 @@ class Szallashelyek(list):
         else:
             print("Azonosító nem található")
 
-    def list_szallashely(self):
+    def szallashely_listazasa(self, szallashely=None):
+        if szallashely is None:
+            for szallashely in self:
+                print(f"Azonosító: {szallashely.azonosito}")
+                print(f"Fajta: {szallashely.fajta}")
+                print(f"Cím: {szallashely.cim}")
+                if isinstance(szallashely, Szalloda):
+                    print(f"Ár: {szallashely.ar}")
+                    print(f"Értekeles: {szallashely.ertekeles}")
+                    print(f"Wellness: {szallashely.wellness}")
+                elif isinstance(szallashely, Panzio):
+                    print(f"Ár: {szallashely.ar}")
+                    print(f"Értekeles: {szallashely.ertekeles}")
+                    print(f"Reggeli: {szallashely.reggeli}")
+                elif isinstance(szallashely, Camping):
+                    print(f"Vízpart: {szallashely.vizpart}")
+                print("-" * 40)
+        else:
+            szallashely = [szallashely]
+            for szallashely in szallashely:
+                print(f"Azonosító: {szallashely.azonosito}")
+                print(f"Fajta: {szallashely.fajta}")
+                print(f"Cím: {szallashely.cim}")
+                if isinstance(szallashely, Szalloda):
+                    print(f"Ár: {szallashely.ar}")
+                    print(f"Értekeles: {szallashely.ertekeles}")
+                    print(f"Wellness: {szallashely.wellness}")
+                elif isinstance(szallashely, Panzio):
+                    print(f"Ár: {szallashely.ar}")
+                    print(f"Értekeles: {szallashely.ertekeles}")
+                    print(f"Reggeli: {szallashely.reggeli}")
+                elif isinstance(szallashely, Camping):
+                    print(f"Vízpart: {szallashely.vizpart}")
+
+    def szallashely_keresese(self):
+        azonosito = input("Azonosito: ")
         for szallashely in self:
-            print(f"Azonosító: {szallashely.azonosito}")
-            print(f"Fajta: {szallashely.fajta}")
-            print(f"Cím: {szallashely.cim}")
-            if isinstance(szallashely, Szalloda):
-                print(f"Ár: {szallashely.ar}")
-                print(f"Értekeles: {szallashely.ertekeles}")
-                print(f"Wellness: {szallashely.wellness}")
-            elif isinstance(szallashely, Panzio):
-                print(f"Ár: {szallashely.ar}")
-                print(f"Értekeles: {szallashely.ertekeles}")
-                print(f"Reggeli: {szallashely.reggeli}")
-            elif isinstance(szallashely, Camping):
-                print(f"Vízpart: {szallashely.vizpart}")
-            print("-" * 40)
+            if azonosito == szallashely.azonosito:
+                szallashelyek.szallashely_listazasa(szallashely)
+                return
+        else:
+            print("Azonosító nem található.")
+        return
 
 
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
@@ -236,5 +263,5 @@ camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 szallashelyek = Szallashelyek()
 
 szallashelyek.szallashely_hozzaadasa()
-szallashelyek.list_szallashely()
+szallashelyek.szallashely_listazasa()
 #szallashelyek.szallashely_torlese()
