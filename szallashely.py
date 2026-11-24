@@ -198,6 +198,16 @@ class Szallashelyek(list):
         else:
             raise TypeError("Hiba")
 
+    def szallashely_torlese(self):
+        azonosito = input("Azonosito: ")
+        for szallashely in self:
+            if azonosito == szallashely.azonosito:
+                self.remove(szallashely)
+                print("Szálláshely törölve.")
+                return
+        else:
+            print("Azonosító nem található")
+
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
 cim2 = Cim(1221, "Budapest", "Kocsis utca", "32/A")
 cim3 = Cim(2324, "Fonyód", "Kossuth utca", "21-22")
@@ -208,3 +218,4 @@ camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 szallashelyek = Szallashelyek()
 
 szallashelyek.szallashely_hozzaadasa()
+szallashelyek.szallashely_torlese()
