@@ -208,6 +208,24 @@ class Szallashelyek(list):
         else:
             print("Azonosító nem található")
 
+    def list_szallashely(self):
+        for szallashely in self:
+            print(f"Azonosító: {szallashely.azonosito}")
+            print(f"Fajta: {szallashely.fajta}")
+            print(f"Cím: {szallashely.cim}")
+            if isinstance(szallashely, Szalloda):
+                print(f"Ár: {szallashely.ar}")
+                print(f"Értekeles: {szallashely.ertekeles}")
+                print(f"Wellness: {szallashely.wellness}")
+            elif isinstance(szallashely, Panzio):
+                print(f"Ár: {szallashely.ar}")
+                print(f"Értekeles: {szallashely.ertekeles}")
+                print(f"Reggeli: {szallashely.reggeli}")
+            elif isinstance(szallashely, Camping):
+                print(f"Vízpart: {szallashely.vizpart}")
+            print("-" * 40)
+
+
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
 cim2 = Cim(1221, "Budapest", "Kocsis utca", "32/A")
 cim3 = Cim(2324, "Fonyód", "Kossuth utca", "21-22")
@@ -218,4 +236,5 @@ camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 szallashelyek = Szallashelyek()
 
 szallashelyek.szallashely_hozzaadasa()
-szallashelyek.szallashely_torlese()
+szallashelyek.list_szallashely()
+#szallashelyek.szallashely_torlese()
