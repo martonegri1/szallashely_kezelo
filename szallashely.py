@@ -466,6 +466,64 @@ class Szallashelyek(list):
         print(f"|Camping             |{camping_db:>11}|")
         print(f"+--------------------+-----------+")
 
+    def szallashelyek_betoltese(self):
+        cur.execute("""
+            SELECT *
+            FROM szallashelyek.szallashelyek
+            INNER JOIN szallashelyek.cimek
+            ON szallashelyek.szallashelyek.azonosito = szallashelyek.cimek.szallashely_id
+        """)
+        adatok = cur.fetchall()
+        for adat in adatok:
+            cim = Cim((adat[5]), (adat[6]), (adat[7]), (adat[8]))
+            if adat[2] == "szálloda":
+                cur.execute("""
+                    SELECT
+                        szallashelyek.szallashelyek.azonosito,
+                        szallashelyek.epitett_szallashely.ar,
+                        szallashelyek.epitett_szallashely.ertekeles,
+                        szallashelyek.szalloda.wellness
+                    FROM szallashelyek.epitett_szallashely
+                    INNER JOIN szallashelyek.szallashelyek
+                        ON szallashelyek.epitett_szallashely.szallashely_id = szallashelyek.szallashelyek.azonosito
+                    INNER JOIN szallashelyek.szalloda
+                        ON szallashelyek.epitett_szallashely.id = szallashelyek.szalloda.epitett_szallashely_id
+                    WHERE szallashelyek.epitett_szallashely.szallashely_id = %s
+                """, (adat[0],))
+                szalloda = cur.fetchone()
+                szalloda = Szalloda((szalloda[0]), (adat[1]), cim, (szalloda[1]), (szalloda[2]), (szalloda[3]))
+                self.append(szalloda)
+            elif adat[2] == "panzió":
+                cur.execute("""
+                    SELECT
+                        szallashelyek.szallashelyek.azonosito,
+                        szallashelyek.epitett_szallashely.ar,
+                        szallashelyek.epitett_szallashely.ertekeles,
+                        szallashelyek.panzio.reggeli
+                    FROM szallashelyek.epitett_szallashely
+                    INNER JOIN szallashelyek.szallashelyek
+                        ON szallashelyek.epitett_szallashely.szallashely_id = szallashelyek.szallashelyek.azonosito
+                    INNER JOIN szallashelyek.panzio
+                        ON szallashelyek.epitett_szallashely.id = szallashelyek.panzio.epitett_szallashely_id
+                    WHERE szallashelyek.epitett_szallashely.szallashely_id = %s
+                """, (adat[0],))
+                panzio = cur.fetchone()
+                panzio = Panzio((panzio[0]), (adat[1]), cim, (panzio[1]), (panzio[2]), (panzio[3]))
+                self.append(panzio)
+            elif adat[2] == "camping":
+                cur.execute("""
+                    SELECT
+                        szallashelyek.szallashelyek.azonosito,
+                        szallashelyek.camping.vizpart
+                    FROM szallashelyek.szallashelyek
+                    INNER JOIN szallashelyek.camping
+                        ON szallashelyek.szallashelyek.azonosito = szallashelyek.camping.szallashely_id
+                    WHERE szallashelyek.szallashelyek.azonosito = %s
+                """, (adat[0],))
+                camping = cur.fetchone()
+                camping = Camping((camping[0]), (adat[1]), cim, (camping[1]))
+                self.append(camping)
+
 
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
 cim2 = Cim(1221, "Budapest", "Kocsis utca", "32/A")
@@ -475,9 +533,9 @@ panzio1 = Panzio("PANZ0001", "sport", cim2, 18000, 4, True )
 camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 
 szallashelyek = Szallashelyek()
-
 #szallashelyek.szallashely_hozzaadasa()
 #szallashelyek.szallashely_listazasa()
 #szallashelyek.szallashely_torlese()
 #szallashelyek.szallashely_modositasa()
-szallashelyek.szallashelyek_statisztikaja()
+#szallashelyek.szallashelyek_statisztikaja()
+szallashelyek.szallashelyek_betoltese()
