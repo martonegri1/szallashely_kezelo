@@ -446,6 +446,21 @@ class Szallashelyek(list):
                 print("A keresett típus nem található.")
                 return
 
+    def szallashelyek_statisztikaja(self):
+        szalloda_db = 0
+        panzio_db = 0
+        camping_db = 0
+        for szallashely in self:
+            if isinstance(szallashely, Szalloda):
+                szalloda_db += 1
+            elif isinstance(szallashely, Panzio):
+                panzio_db += 1
+            elif isinstance(szallashely, Camping):
+                camping_db += 1
+        print(len(self))
+        print(szalloda_db)
+        print(panzio_db)
+        print(camping_db)
 
 
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
