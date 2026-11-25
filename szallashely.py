@@ -400,6 +400,52 @@ class Szallashelyek(list):
             rendezett_fajta = sorted(self, key=lambda x:x.fajta, reverse=False)
             self.szallashely_listazasa(rendezett_fajta)
 
+    def szallashelyek_szurese(self):
+        print("1 - Azonosító alapján")
+        print("2 - Fajta alapján")
+        print("3 - Típus alapján")
+        szures = input("Válassz: ")
+
+        if szures == "1":
+            azonosito = input("Azonosító: ")
+            talalat = False
+            for szallashely in self:
+                if azonosito == szallashely.azonosito:
+                    talalat = True
+                    self.szallashely_listazasa(szallashely)
+            if not talalat:
+                print("A keresett azonosító nem található.")
+                return
+        elif szures == "2":
+            fajta = input("Fajta: ")
+            talalat = False
+            for szallashely in self:
+                if fajta == szallashely.fajta:
+                    talalat = True
+                    self.szallashely_listazasa(szallashely)
+            if not talalat:
+                print("A keresett fajta nem található.")
+                return
+        elif szures == "3":
+            tipus = input("Típus: ")
+            talalat = False
+            for szallashely in self:
+                if tipus == "Szalloda" and isinstance(szallashely, Szalloda):
+                    talalat = True
+                    self.szallashely_listazasa(szallashely)
+
+                elif tipus == "Panzio" and isinstance(szallashely, Panzio):
+                    talalat = True
+                    self.szallashely_listazasa(szallashely)
+
+                elif tipus == "Camping" and isinstance(szallashely, Camping):
+                    talalat = True
+                    self.szallashely_listazasa(szallashely)
+
+            if not talalat:
+                print("A keresett típus nem található.")
+                return
+
 
 
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
