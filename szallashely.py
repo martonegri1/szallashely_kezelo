@@ -225,6 +225,24 @@ class Szallashelyek(list):
                 elif isinstance(szallashely, Camping):
                     print(f"Vízpart: {szallashely.vizpart}")
                 print("-" * 40)
+
+        elif isinstance(szallashely, list):
+            for szallashely in szallashely:
+                print(f"Azonosító: {szallashely.azonosito}")
+                print(f"Fajta: {szallashely.fajta}")
+                print(f"Cím: {szallashely.cim}")
+                if isinstance(szallashely, Szalloda):
+                    print(f"Ár: {szallashely.ar}")
+                    print(f"Értekeles: {szallashely.ertekeles}")
+                    print(f"Wellness: {szallashely.wellness}")
+                elif isinstance(szallashely, Panzio):
+                    print(f"Ár: {szallashely.ar}")
+                    print(f"Értekeles: {szallashely.ertekeles}")
+                    print(f"Reggeli: {szallashely.reggeli}")
+                elif isinstance(szallashely, Camping):
+                    print(f"Vízpart: {szallashely.vizpart}")
+                print("-" * 40)
+
         else:
             szallashely = [szallashely]
             for szallashely in szallashely:
@@ -241,6 +259,7 @@ class Szallashelyek(list):
                     print(f"Reggeli: {szallashely.reggeli}")
                 elif isinstance(szallashely, Camping):
                     print(f"Vízpart: {szallashely.vizpart}")
+                print("-" * 40)
 
     def szallashely_keresese(self):
         azonosito = input("Azonosito: ")
@@ -368,6 +387,19 @@ class Szallashelyek(list):
                             return
         else:
             print("Azonosító nem található.")
+
+    def szallashelyek_rendezese(self):
+        print("1 - Azonosító szerint")
+        print("2 - Fajta szerint")
+        rendezes = input("Add meg a rendezés szempontját: ")
+
+        if rendezes == "1":
+            rendezett_azonosito = sorted(self, key=lambda x:x.azonosito, reverse=False)
+            self.szallashely_listazasa(rendezett_azonosito)
+        elif rendezes == "2":
+            rendezett_fajta = sorted(self, key=lambda x:x.fajta, reverse=False)
+            self.szallashely_listazasa(rendezett_fajta)
+
 
 
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
