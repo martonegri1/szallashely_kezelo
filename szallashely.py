@@ -457,10 +457,14 @@ class Szallashelyek(list):
                 panzio_db += 1
             elif isinstance(szallashely, Camping):
                 camping_db += 1
-        print(len(self))
-        print(szalloda_db)
-        print(panzio_db)
-        print(camping_db)
+        print(f"+--------------------+-----------+")
+        print(f"| Szálláshely típusa | Darabszám |")
+        print(f"+--------------------+-----------+")
+        print(f"|Összes szálláshely  |{len(self):>11}|")
+        print(f"|Szálloda            |{szalloda_db:>11}|")
+        print(f"|Panzió              |{panzio_db:>11}|")
+        print(f"|Camping             |{camping_db:>11}|")
+        print(f"+--------------------+-----------+")
 
 
 cim1 = Cim(1014, "Budapest", "Úri utca", "45")
@@ -472,7 +476,8 @@ camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 
 szallashelyek = Szallashelyek()
 
-szallashelyek.szallashely_hozzaadasa()
+#szallashelyek.szallashely_hozzaadasa()
 #szallashelyek.szallashely_listazasa()
 #szallashelyek.szallashely_torlese()
-szallashelyek.szallashely_modositasa()
+#szallashelyek.szallashely_modositasa()
+szallashelyek.szallashelyek_statisztikaja()
