@@ -390,7 +390,7 @@ class Szallashelyek(list):
         return
 
     def szallashely_modositasa(self):
-        azonosito = input("Azonosító: ")
+        azonosito = input("Azonosító: ").strip()
         for szallashely in self:
             if azonosito == szallashely.azonosito:
                 print("1 - Azonosító")
@@ -421,15 +421,42 @@ class Szallashelyek(list):
                 elif modositas == "2":
                     uj_fajta = input("Új fajta: ")
                     if uj_fajta != szallashely.fajta:
-                        szallashely.fajta = szallashely.fajta_beallitasa(uj_fajta)
+                        uj_fajta = szallashely.fajta_beallitasa(uj_fajta)
+                        cur.execute("""
+                            UPDATE szallashelyek.szallashelyek
+                            SET fajta = %s
+                            WHERE azonosito = %s
+                        """, (uj_fajta, szallashely.azonosito))
+                        conn.commit()
+                        szallashely.fajta = uj_fajta
                         return
                     else:
                         print("Ugyanaz a fajta nem adható meg!")
                         return
 
+
+
                 elif modositas == "3":
-                    uj_cim = input("Új cim: ")
-                    if uj_cim != szallashely.cim:
+                    iranyitoszam = int(input("Új irányítószám: "))
+                    telepules = input("Új település: ")
+                    kozterulet_neve = input("Új közterület neve: ")
+                    hazszam = input("Új házszám: ")
+                    uj_cim = Cim(iranyitoszam, telepules, kozterulet_neve, hazszam)
+                    if (uj_cim.iranyitoszam != szallashely.cim.iranyitoszam or
+                            uj_cim.telepules != szallashely.cim.telepules or
+                            uj_cim.kozterulet_neve != szallashely.cim.kozterulet_neve or
+                            uj_cim.hazszam != szallashely.cim.hazszam):
+                        cur.execute("""
+                            UPDATE szallashelyek.cimek
+                            SET iranyitoszam = %s,
+                                varos = %s,
+                                utca = %s,
+                                hazszam = %s
+                            WHERE szallashely_id = %s
+                        """, (uj_cim.iranyitoszam, uj_cim.telepules,
+                              uj_cim.kozterulet_neve, uj_cim.hazszam,
+                              szallashely.azonosito))
+                        conn.commit()
                         szallashely.cim = uj_cim
                         return
                     else:
@@ -440,7 +467,14 @@ class Szallashelyek(list):
                     if isinstance(szallashely, Szalloda) or isinstance(szallashely, Panzio):
                         uj_ar = int(input("Új ár: "))
                         if uj_ar != szallashely.ar:
-                            szallashely.ar = szallashely.ar_beallitasa(uj_ar)
+                            uj_ar = szallashely.ar_beallitasa(uj_ar)
+                            cur.execute("""
+                                UPDATE szallashelyek.epitett_szallashely
+                                SET ar = %s
+                                WHERE szallashely_id = %s
+                            """, (uj_ar, szallashely.azonosito))
+                            conn.commit()
+                            szallashely.ar = uj_ar
                             return
                         else:
                             print("Ugyanaz az ár nem adható meg!")
@@ -456,7 +490,15 @@ class Szallashelyek(list):
                             else:
                                 print("Hibás választás!")
                                 return
-                            szallashely.vizpart = szallashely.vizpart_beallitasa(uj_vizpart)
+                            uj_vizpart = szallashely.vizpart_beallitasa(uj_vizpart)
+
+                            cur.execute("""
+                                UPDATE szallashelyek.camping
+                                SET vizpart = %s
+                                WHERE szallashely_id = %s
+                            """, (uj_vizpart, szallashely.azonosito))
+                            conn.commit()
+                            szallashely.vizpart = uj_vizpart
                             return
                         else:
                             print("Ugyanaz nem adható meg!")
@@ -466,7 +508,15 @@ class Szallashelyek(list):
                     if isinstance(szallashely, Szalloda) or isinstance(szallashely, Panzio):
                         uj_ertekeles = int(input("Új értekeles: "))
                         if uj_ertekeles != szallashely.ertekeles:
-                            szallashely.ertekeles = szallashely.ertekeles_beallitasa(uj_ertekeles)
+                            uj_ertekeles = szallashely.ertekeles_beallitasa(uj_ertekeles)
+
+                            cur.execute("""
+                                UPDATE szallashelyek.epitett_szallashely
+                                SET ertekeles = %s
+                                WHERE szallashely_id = %s
+                            """, (uj_ertekeles, szallashely.azonosito))
+                            conn.commit()
+                            szallashely.ertekeles = uj_ertekeles
                             return
                         else:
                             print("Ugyanaz az értékelés nem adható meg!")
@@ -483,7 +533,17 @@ class Szallashelyek(list):
                             else:
                                 print("Hibás választás!")
                                 return
-                            szallashely.wellness = szallashely.wellness_beallitasa(uj_wellness)
+                            uj_wellness = szallashely.wellness_beallitasa(uj_wellness)
+                            cur.execute("""
+                                UPDATE szallashelyek.szalloda
+                                SET wellness = %s
+                                WHERE epitett_szallashely_id = (
+                                    SELECT id
+                                        FROM szallashelyek.epitett_szallashely
+                                    WHERE szallashely_id = %s)
+                            """, (uj_wellness, szallashely.azonosito))
+                            conn.commit()
+                            szallashely.wellness = uj_wellness
                             return
                         else:
                             print("Ugyanaz nem adható meg!")
@@ -498,7 +558,17 @@ class Szallashelyek(list):
                             else:
                                 print("Hibás választás!")
                                 return
-                            szallashely.reggeli = szallashely.reggeli_beallitasa(uj_reggeli)
+                            uj_reggeli = szallashely.reggeli_beallitasa(uj_reggeli)
+                            cur.execute("""
+                                UPDATE szallashelyek.panzio
+                                SET reggeli = %s
+                                WHERE epitett_szallashely_id = (
+                                    SELECT id
+                                        FROM szallashelyek.epitett_szallashely
+                                    WHERE szallashely_id = %s)
+                            """, (uj_reggeli, szallashely.azonosito))
+                            conn.commit()
+                            szallashely.reggeli = uj_reggeli
                             return
                         else:
                             print("Ugyanaz nem adható meg!")
@@ -652,7 +722,8 @@ camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 
 szallashelyek = Szallashelyek()
 szallashelyek.szallashelyek_betoltese()
-#szallashelyek.szallashely_hozzaadasa()
+szallashelyek.szallashely_hozzaadasa()
+szallashelyek.szallashely_modositasa()
 #szallashelyek.szallashely_listazasa()
 szallashelyek.szallashely_torlese()
 #szallashelyek.szallashely_modositasa()
