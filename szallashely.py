@@ -143,8 +143,13 @@ class Szallashelyek(list):
             if azonosito == szallashely.azonosito:
                 print("A szálláshely már létezik.")
                 return
+
         fajta = input("Fajta: ")
-        cim = input("Cim: ")
+        iranyitoszam = int(input("Irányítószám: "))
+        varos = input("Város: ")
+        kozterulet_neve = input("Közterület neve: ")
+        hazszam = input("Házszám: ")
+        uj_cim = Cim(iranyitoszam, varos, kozterulet_neve, hazszam)
 
         print("1 - Szálloda")
         print("2 - Panzió")
@@ -152,51 +157,105 @@ class Szallashelyek(list):
         tipus = input("Válaszd ki a szálláshely típusát: ")
 
         if tipus == "1":
+            tipus = "szálloda"
             ar = int(input("Ár: "))
-            ertekeles = int(input("Értékelés: "))
-            wellness = input("Wellness: ")
-            if wellness == "van":
-                wellness = True
-            elif wellness == "nincs":
-                wellness = False
-            else:
-                print("Hibás válasz!")
-                return
-            uj_szallashely = Szalloda(azonosito, fajta, cim, ar, ertekeles, wellness)
-            self.append(uj_szallashely)
+            ertekeles = int(input("Értékelés (1-5): "))
+            wellness = input("Wellness (van/nincs): ").lower() == "van"
+
+            uj_szallashely = Szalloda(
+                azonosito, fajta, uj_cim, ar, ertekeles, wellness
+            )
+
         elif tipus == "2":
+            tipus = "panzió"
             ar = int(input("Ár: "))
-            ertekeles = int(input("értékelés: "))
-            reggeli = input("Reggeli: ")
-            if reggeli == "van":
-                reggeli = True
-            elif reggeli == "nincs":
-                reggeli = False
-            else:
-                print("Hibás válasz!")
-                return
-            uj_szallashely = Panzio(azonosito, fajta, cim, ar, ertekeles, reggeli)
-            self.append(uj_szallashely)
+            ertekeles = int(input("Értékelés (1-5): "))
+            reggeli = input("Reggeli (van/nincs): ").lower() == "van"
+
+            uj_szallashely = Panzio(
+                azonosito, fajta, uj_cim, ar, ertekeles, reggeli
+            )
+
         elif tipus == "3":
-            vizpart = input("Vízpart: ")
-            if vizpart == "van":
-                vizpart = True
-            elif vizpart == "nincs":
-                vizpart = False
-            else:
-                print("Hibás választás!")
-                return
-            uj_szallashely = Camping(azonosito, fajta, cim, vizpart)
-            self.append(uj_szallashely)
+            tipus = "camping"
+            vizpart = input("Vízpart (van/nincs): ").lower() == "van"
+
+            uj_szallashely = Camping(
+                azonosito, fajta, uj_cim, vizpart
+            )
+
         else:
             print("Hibás választás!")
             return
 
-    def append(self, szallashely):
-        if isinstance(szallashely, (Szalloda, Panzio, Camping)):
-            super().append(szallashely)
-        else:
-            raise TypeError("Hiba")
+        cur.execute("""
+            INSERT INTO szallashelyek.szallashelyek
+                (azonosito, fajta, tipus)
+            VALUES (%s, %s, %s)
+        """, (uj_szallashely.azonosito, uj_szallashely.fajta, tipus))
+
+        cur.execute("""
+            INSERT INTO szallashelyek.cimek
+                (szallashely_id, iranyitoszam, varos, utca, hazszam)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            uj_szallashely.azonosito,
+            uj_cim.iranyitoszam,
+            uj_cim.telepules,
+            uj_cim.kozterulet_neve,
+            uj_cim.hazszam
+        ))
+
+        if tipus == "szálloda":
+            cur.execute("""
+                INSERT INTO szallashelyek.epitett_szallashely
+                    (szallashely_id, ar, ertekeles)
+                VALUES (%s, %s, %s)
+                RETURNING id
+            """, (
+                uj_szallashely.azonosito,
+                uj_szallashely.ar,
+                uj_szallashely.ertekeles
+            ))
+
+            epitett_id = cur.fetchone()[0]
+
+            cur.execute("""
+                INSERT INTO szallashelyek.szalloda
+                    (epitett_szallashely_id, wellness)
+                VALUES (%s, %s)
+            """, (epitett_id, uj_szallashely.wellness))
+
+        elif tipus == "panzió":
+            cur.execute("""
+                INSERT INTO szallashelyek.epitett_szallashely
+                    (szallashely_id, ar, ertekeles)
+                VALUES (%s, %s, %s)
+                RETURNING id
+            """, (
+                uj_szallashely.azonosito,
+                uj_szallashely.ar,
+                uj_szallashely.ertekeles
+            ))
+
+            epitett_id = cur.fetchone()[0]
+
+            cur.execute("""
+                INSERT INTO szallashelyek.panzio
+                    (epitett_szallashely_id, reggeli)
+                VALUES (%s, %s)
+            """, (epitett_id, uj_szallashely.reggeli))
+
+        elif tipus == "camping":
+            cur.execute("""
+                INSERT INTO szallashelyek.camping
+                    (szallashely_id, vizpart)
+                VALUES (%s, %s)
+            """, (uj_szallashely.azonosito, uj_szallashely.vizpart))
+
+        conn.commit()
+        self.append(uj_szallashely)
+        print("A szálláshely sikeresen hozzáadva!")
 
     def szallashely_torlese(self):
         azonosito = input("Azonosito: ")
@@ -533,7 +592,7 @@ panzio1 = Panzio("PANZ0001", "sport", cim2, 18000, 4, True )
 camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 
 szallashelyek = Szallashelyek()
-#szallashelyek.szallashely_hozzaadasa()
+szallashelyek.szallashely_hozzaadasa()
 #szallashelyek.szallashely_listazasa()
 #szallashelyek.szallashely_torlese()
 #szallashelyek.szallashely_modositasa()
