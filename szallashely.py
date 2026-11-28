@@ -258,14 +258,73 @@ class Szallashelyek(list):
         print("A szálláshely sikeresen hozzáadva!")
 
     def szallashely_torlese(self):
-        azonosito = input("Azonosito: ")
+        azonosito = input("Azonosító: ")
+
         for szallashely in self:
             if azonosito == szallashely.azonosito:
+
+                if isinstance(szallashely, Szalloda):
+                    cur.execute("""
+                        SELECT id
+                        FROM szallashelyek.epitett_szallashely
+                        WHERE szallashely_id = %s
+                    """, (azonosito,))
+
+                    epitett_id = cur.fetchone()[0]
+
+                    cur.execute("""
+                        DELETE FROM szallashelyek.szalloda
+                        WHERE epitett_szallashely_id = %s
+                    """, (epitett_id,))
+
+                    cur.execute("""
+                        DELETE FROM szallashelyek.epitett_szallashely
+                        WHERE id = %s
+                    """, (epitett_id,))
+
+                elif isinstance(szallashely, Panzio):
+                    cur.execute("""
+                        SELECT id
+                        FROM szallashelyek.epitett_szallashely
+                        WHERE szallashely_id = %s
+                    """, (azonosito,))
+
+                    epitett_id = cur.fetchone()[0]
+
+                    cur.execute("""
+                        DELETE FROM szallashelyek.panzio
+                        WHERE epitett_szallashely_id = %s
+                    """, (epitett_id,))
+
+                    cur.execute("""
+                        DELETE FROM szallashelyek.epitett_szallashely
+                        WHERE id = %s
+                    """, (epitett_id,))
+
+                else:
+                    cur.execute("""
+                        DELETE FROM szallashelyek.camping
+                        WHERE szallashely_id = %s
+                    """, (azonosito,))
+
+                cur.execute("""
+                    DELETE FROM szallashelyek.cimek
+                    WHERE szallashely_id = %s
+                """, (azonosito,))
+
+                cur.execute("""
+                    DELETE FROM szallashelyek.szallashelyek
+                    WHERE azonosito = %s
+                """, (azonosito,))
+
+                conn.commit()
+
                 self.remove(szallashely)
                 print("Szálláshely törölve.")
                 return
+
         else:
-            print("Azonosító nem található")
+            print("Azonosító nem található.")
 
     def szallashely_listazasa(self, szallashely=None):
         if szallashely is None:
@@ -592,9 +651,9 @@ panzio1 = Panzio("PANZ0001", "sport", cim2, 18000, 4, True )
 camping1 = Camping("CAMP0001", "egyéb", cim3, False)
 
 szallashelyek = Szallashelyek()
-szallashelyek.szallashely_hozzaadasa()
+szallashelyek.szallashelyek_betoltese()
+#szallashelyek.szallashely_hozzaadasa()
 #szallashelyek.szallashely_listazasa()
-#szallashelyek.szallashely_torlese()
+szallashelyek.szallashely_torlese()
 #szallashelyek.szallashely_modositasa()
 #szallashelyek.szallashelyek_statisztikaja()
-szallashelyek.szallashelyek_betoltese()
